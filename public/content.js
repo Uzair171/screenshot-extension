@@ -41,26 +41,34 @@ if (!window._screenshotScriptInjected) {
           return;
         }
 
-        try {
-          chrome.runtime.sendMessage(
-            { type: "take-screenshot", x, y },
-            (response) => {
-              restoreStyle();
-
-              if (chrome.runtime.lastError) {
-                console.warn(
-                  "⚠️ sendMessage failed:",
-                  chrome.runtime.lastError.message
-                );
-              } else if (response?.success) {
-                console.log("✅ Screenshot captured:", target.tagName);
+        // Wrap sendMessage in Promise so we can always .finally()
+        const messagePromise = new Promise((resolve) => {
+          try {
+            chrome.runtime.sendMessage(
+              { type: "take-screenshot", x, y },
+              (response) => {
+                if (chrome.runtime.lastError) {
+                  console.warn(
+                    "⚠️ sendMessage failed:",
+                    chrome.runtime.lastError.message
+                  );
+                  resolve(false);
+                } else {
+                  console.log("✅ Screenshot captured:", target.tagName);
+                  resolve(true);
+                }
               }
-            }
-          );
-        } catch (err) {
-          console.error("❌ Error sending message:", err.message);
+            );
+          } catch (err) {
+            console.error("❌ Error sending message:", err.message);
+            resolve(false);
+          }
+        });
+
+        // Always restore style after sendMessage completes
+        messagePromise.finally(() => {
           restoreStyle();
-        }
+        });
       }, 30);
     });
 
