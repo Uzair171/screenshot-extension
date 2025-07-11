@@ -61,7 +61,7 @@ if (!window._screenshotScriptInjected) {
           console.error("❌ Error sending message:", err.message);
           restoreStyle();
         }
-      }, 10);
+      }, 30);
     });
 
     function restoreStyle() {
