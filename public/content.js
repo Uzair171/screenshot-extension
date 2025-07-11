@@ -88,14 +88,43 @@ if (!window._screenshotScriptInjected) {
     true
   );
 
-  // Input
+  // Input with debounce and spacebar screenshot
+  let inputTimeout = null;
+
   document.addEventListener(
     "input",
     (event) => {
       const target = event.target;
       const tag = target.tagName;
 
-      if (clickableTags.has(tag)) {
+      if (!clickableTags.has(tag)) return;
+
+      const rect = target.getBoundingClientRect();
+
+      // Debounce: wait 1s after typing stops
+      clearTimeout(inputTimeout);
+      inputTimeout = setTimeout(() => {
+        sendScreenshotWithHighlight(
+          target,
+          rect.left + rect.width / 2,
+          rect.top + rect.height / 2
+        );
+      }, 1000);
+    },
+    true
+  );
+
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      const target = event.target;
+      const tag = target.tagName;
+
+      if (
+        event.key === " " &&
+        clickableTags.has(tag) &&
+        document.contains(target)
+      ) {
         const rect = target.getBoundingClientRect();
         sendScreenshotWithHighlight(
           target,
