@@ -1,6 +1,5 @@
-// Popup.jsx
 import { useEffect, useState } from "react";
-import { getAllScreenshots, deleteScreenshot, openDB } from "../db.js";
+import { getAllScreenshots, openDB } from "../db.js";
 import "./popup.css";
 
 function Popup() {
@@ -30,12 +29,22 @@ function Popup() {
 
   const deleteAll = async () => {
     const db = await openDB();
-    const tx = db.transaction("screenshots", "readwrite");
-    const store = tx.objectStore("screenshots");
-    const allKeys = await store.getAllKeys();
-    allKeys.forEach((key) => store.delete(key));
-    await tx.done;
-    setScreenshots([]);
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction("screenshots", "readwrite");
+      const store = tx.objectStore("screenshots");
+
+      const clearRequest = store.clear();
+
+      clearRequest.onsuccess = () => {
+        console.log("✅ All screenshots cleared");
+        setScreenshots([]);
+        resolve();
+      };
+      clearRequest.onerror = () => {
+        console.error("❌ Failed to clear screenshots:", clearRequest.error);
+        reject(clearRequest.error);
+      };
+    });
   };
 
   return (
@@ -51,24 +60,21 @@ function Popup() {
         <div className="empty-state">No screenshots yet!</div>
       ) : (
         <div className="screenshot-grid">
-          {screenshots.map((shot) => {
-            console.log("✅ Rendering blob:", shot.blob);
-            return (
-              <div key={shot.id} className="screenshot-item">
-                <img
-                  src={shot.url}
-                  className="thumb"
-                  onClick={() => openImage(shot)}
-                />
-                <div className="info">
-                  <div className="site">{shot.site}</div>
-                  <div className="time">
-                    {new Date(shot.time).toLocaleString()}
-                  </div>
+          {screenshots.map((shot) => (
+            <div key={shot.id} className="screenshot-item">
+              <img
+                src={shot.url}
+                className="thumb"
+                onClick={() => openImage(shot)}
+              />
+              <div className="info">
+                <div className="site">{shot.site}</div>
+                <div className="time">
+                  {new Date(shot.time).toLocaleString()}
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       )}
     </div>

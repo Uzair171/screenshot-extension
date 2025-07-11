@@ -9,6 +9,7 @@ export function openDB() {
 
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
+
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -22,12 +23,13 @@ export function openDB() {
   });
 }
 
+// Save a screenshot
 export async function saveScreenshot({ blob, x, y, site }) {
   const db = await openDB();
-
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, "readwrite");
     const store = tx.objectStore(STORE_NAME);
+
     const data = {
       blob,
       x,
@@ -42,27 +44,40 @@ export async function saveScreenshot({ blob, x, y, site }) {
   });
 }
 
+// Get all screenshots
 export async function getAllScreenshots() {
   const db = await openDB();
-
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, "readonly");
     const store = tx.objectStore(STORE_NAME);
-    const req = store.getAll();
 
+    const req = store.getAll();
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
 }
 
+// Delete a screenshot by ID
 export async function deleteScreenshot(id) {
   const db = await openDB();
-
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, "readwrite");
     const store = tx.objectStore(STORE_NAME);
-    const req = store.delete(id);
 
+    const req = store.delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// Clear all screenshots
+export async function clearAllScreenshots() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    const store = tx.objectStore(STORE_NAME);
+
+    const req = store.clear();
     req.onsuccess = () => resolve();
     req.onerror = () => reject(req.error);
   });
