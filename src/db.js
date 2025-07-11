@@ -1,8 +1,8 @@
+// ===== db.js =====
 const DB_NAME = "ScreenshotDB";
 const DB_VERSION = 1;
 const STORE_NAME = "screenshots";
 
-// Open or create IndexedDB
 export function openDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -23,7 +23,6 @@ export function openDB() {
   });
 }
 
-// Save a screenshot
 export async function saveScreenshot({ blob, x, y, site }) {
   const db = await openDB();
   return new Promise((resolve, reject) => {
@@ -44,7 +43,6 @@ export async function saveScreenshot({ blob, x, y, site }) {
   });
 }
 
-// Get all screenshots
 export async function getAllScreenshots() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
@@ -57,7 +55,6 @@ export async function getAllScreenshots() {
   });
 }
 
-// Delete a screenshot by ID
 export async function deleteScreenshot(id) {
   const db = await openDB();
   return new Promise((resolve, reject) => {
@@ -70,7 +67,6 @@ export async function deleteScreenshot(id) {
   });
 }
 
-// Clear all screenshots
 export async function clearAllScreenshots() {
   const db = await openDB();
   return new Promise((resolve, reject) => {

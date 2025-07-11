@@ -1,5 +1,11 @@
+// === Popup.jsx ===
 import { useEffect, useState } from "react";
-import { getAllScreenshots, openDB } from "../db.js";
+import {
+  getAllScreenshots,
+  deleteScreenshot,
+  clearAllScreenshots,
+} from "../db.js";
+import { FiTrash2, FiDownload } from "react-icons/fi";
 import "./popup.css";
 
 function Popup() {
@@ -27,24 +33,21 @@ function Popup() {
     `);
   };
 
+  const downloadImage = (shot) => {
+    const a = document.createElement("a");
+    a.href = shot.url;
+    a.download = `${shot.site.replace(/[^a-z0-9]/gi, "_")}_${shot.id}.png`;
+    a.click();
+  };
+
+  const deleteSingle = async (id) => {
+    await deleteScreenshot(id);
+    setScreenshots((prev) => prev.filter((s) => s.id !== id));
+  };
+
   const deleteAll = async () => {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction("screenshots", "readwrite");
-      const store = tx.objectStore("screenshots");
-
-      const clearRequest = store.clear();
-
-      clearRequest.onsuccess = () => {
-        console.log("✅ All screenshots cleared");
-        setScreenshots([]);
-        resolve();
-      };
-      clearRequest.onerror = () => {
-        console.error("❌ Failed to clear screenshots:", clearRequest.error);
-        reject(clearRequest.error);
-      };
-    });
+    await clearAllScreenshots();
+    setScreenshots([]);
   };
 
   return (
@@ -52,7 +55,7 @@ function Popup() {
       <div className="popup-header">
         <h3>Screenshots</h3>
         <button className="delete-btn" onClick={deleteAll}>
-          🗑 Clear All
+          <FiTrash2 /> Clear All
         </button>
       </div>
 
@@ -72,6 +75,14 @@ function Popup() {
                 <div className="time">
                   {new Date(shot.time).toLocaleString()}
                 </div>
+              </div>
+              <div className="actions">
+                <button onClick={() => downloadImage(shot)} title="Download">
+                  <FiDownload />
+                </button>
+                <button onClick={() => deleteSingle(shot.id)} title="Delete">
+                  <FiTrash2 />
+                </button>
               </div>
             </div>
           ))}

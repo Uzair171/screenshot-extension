@@ -1,8 +1,7 @@
-// Prevent multiple injections
+// === content.js ===
+
 if (!window._screenshotScriptInjected) {
   window._screenshotScriptInjected = true;
-
-  // --- START SCRIPT LOGIC ---
 
   const hasVisibleText = (el) => el?.innerText?.trim().length > 0;
 
@@ -41,7 +40,6 @@ if (!window._screenshotScriptInjected) {
           return;
         }
 
-        // Wrap sendMessage in Promise so we can always .finally()
         const messagePromise = new Promise((resolve) => {
           try {
             chrome.runtime.sendMessage(
@@ -65,7 +63,6 @@ if (!window._screenshotScriptInjected) {
           }
         });
 
-        // Always restore style after sendMessage completes
         messagePromise.finally(() => {
           restoreStyle();
         });
@@ -78,7 +75,6 @@ if (!window._screenshotScriptInjected) {
     }
   }
 
-  // Click
   document.addEventListener(
     "click",
     (event) => {
@@ -96,7 +92,6 @@ if (!window._screenshotScriptInjected) {
     true
   );
 
-  // Input with debounce and spacebar screenshot
   let inputTimeout = null;
 
   document.addEventListener(
@@ -109,7 +104,6 @@ if (!window._screenshotScriptInjected) {
 
       const rect = target.getBoundingClientRect();
 
-      // Debounce: wait 1s after typing stops
       clearTimeout(inputTimeout);
       inputTimeout = setTimeout(() => {
         sendScreenshotWithHighlight(
@@ -143,6 +137,4 @@ if (!window._screenshotScriptInjected) {
     },
     true
   );
-
-  // --- END SCRIPT LOGIC ---
 }
