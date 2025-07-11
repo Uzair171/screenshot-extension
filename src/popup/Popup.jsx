@@ -15,16 +15,7 @@ function Popup() {
     newTab.document.write(`
       <html><body style="margin:0; position:relative;">
         <img src="${shot.image}" style="max-width:100%;" />
-        <div style="
-          position:absolute;
-          top:${shot.y}px;
-          left:${shot.x}px;
-          width:20px;
-          height:20px;
-          border:2px solid red;
-          border-radius:50%;
-          pointer-events:none;
-        "></div>
+        
       </body></html>
     `);
   };

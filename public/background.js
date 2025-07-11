@@ -62,8 +62,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             ctx.drawImage(imgBitmap, 0, 0);
 
             const blob = await canvas.convertToBlob({
-              type: "image/jpeg",
-              quality: 0.7,
+              type: "image/png",
             });
             const reader = new FileReader();
             reader.onloadend = () => {
