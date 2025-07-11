@@ -2,7 +2,8 @@
   "manifest_version": 3,
   "name": "Screenshot Click Capture",
   "version": "1.0",
-  "permissions": ["activeTab", "tabs", "storage", "scripting"],
+  "description": "Capture screenshots on clicks and store them using IndexedDB.",
+  "permissions": ["activeTab", "tabs", "scripting", "webNavigation"],
   "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "index.html",
@@ -18,5 +19,10 @@
       "js": ["content.js"],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
 }
